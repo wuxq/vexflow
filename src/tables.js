@@ -406,6 +406,22 @@ Vex.Flow.durationIsDotted = function(duration) {
   return ret;
 }
 
+Vex.Flow.trillCodes = function(tr) {
+  return Vex.Flow.trillCodes.trills[tr];
+}
+
+Vex.Flow.trillCodes.trills = {
+	'tr': 'v1f', //tr
+	'turn': 'v2c', //w,
+	'mordent': 'v1e', //w
+	'mordentTurn': 'v45', //v|v
+	'lowerPrefix': 'v60', //,w
+	'lowerPrefixTurn': 'v29',
+	'upperPrefix': 'v20', //|w
+	'upperPrefixTurn': 'v68', //'w|v
+	'upperSuffix': 'v6d' //w'
+};
+
 Vex.Flow.durationToGlyph.duration_codes = {
   "w": { // Whole note
     code_head: "v1d",
