@@ -285,6 +285,9 @@ Vex.Flow.StaveNote.prototype.getDots = function() {
   return this.modifierContext.getModifiers("dots");
 }
 
+Vex.Flow.StaveNote.prototype.addTrill = function(style) {
+  return this.addAnnotation(0, new Vex.Flow.Trill(style));
+}
 
 Vex.Flow.StaveNote.prototype.getVoiceShiftWidth = function() {
   // TODO: may need to accomodate for dot here.
