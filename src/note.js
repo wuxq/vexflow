@@ -51,6 +51,8 @@ Vex.Flow.Note.prototype.init = function(duration) {
   this.preFormatted = false;  // Is this note preFormatted?
   this.ys = [];               // list of y coordinates for each note
                               // we need to hold on to these for ties and beams.
+  this.x = null;			  // x position can be set explictly
+  
   // Drawing
   this.context = null;
   this.stave = null;
@@ -58,6 +60,11 @@ Vex.Flow.Note.prototype.init = function(duration) {
 
 Vex.Flow.Note.prototype.setYs = function(ys) {
   this.ys = ys; return this; }
+Vex.Flow.Note.prototype.setX = function(x) {
+  if (isNaN(x)) {
+  	throw new Vex.RERR('Invalid x coordinate attempted: ' + x.toString());
+  }
+  this.x = x; return this; }
 Vex.Flow.Note.prototype.getStave = function() { return this.stave; }
 Vex.Flow.Note.prototype.setStave = function(stave) {
   this.stave = stave; return this; }
@@ -127,12 +134,20 @@ Vex.Flow.Note.prototype.setXShift = function(x) {
 }
 
 Vex.Flow.Note.prototype.getX = function(x) {
+  if (this.x) {
+  	return this.x;
+  }
+
   if (!this.tickContext) throw new Vex.RERR("NoTickContext",
       "Note needs a TickContext assigned for an X-Value");
   return this.tickContext.getX() + this.x_shift;
 }
 
 Vex.Flow.Note.prototype.getAbsoluteX = function(x) {
+  if (this.x) {
+  	return this.x;
+  }
+  
   if (!this.tickContext) throw new Vex.RERR("NoTickContext",
       "Note needs a TickContext assigned for an X-Value");
 
