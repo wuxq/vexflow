@@ -42,7 +42,7 @@ Vex.Flow.GraceNoteGroup.prototype.draw = function() {
   for (var i = 0; i < numGraceNotes; i++) {
     var grace = new Vex.Flow.StaveNote({
     	keys: [this.graceNotes.keys[i]],
-    	duration: this.graceNotes.duration, // All grace notes in the group should share the same duration
+    	duration: this.graceNotes.duration || '32', // All grace notes in the group should share the same duration
     	isGraceNote: true // Signal for StaveNote to behave slightly differently
     });
     

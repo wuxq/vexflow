@@ -40,9 +40,7 @@ Vex.Flow.Test.GraceNote.basic = function(options, contextBuilder) {
 	duration: "q",
 	stem_direction: Vex.Flow.StaveNote.STEM_DOWN
   }).addGraceNoteGroup(0, {
-	keys: ['g/5'],
-	duration: "32",
-	isGraceNote: true
+	keys: ['g/5']
   }));
 
   // D grace note on low A
@@ -51,9 +49,7 @@ Vex.Flow.Test.GraceNote.basic = function(options, contextBuilder) {
 	duration: "q",
 	stem_direction: Vex.Flow.StaveNote.STEM_DOWN
   }).addGraceNoteGroup(0, {
-	keys: ['d/5'],
-	duration: "32",
-	isGraceNote: true
+	keys: ['d/5']
   }));
 
   // E grace note on low A
@@ -62,12 +58,10 @@ Vex.Flow.Test.GraceNote.basic = function(options, contextBuilder) {
 	duration: "q",
 	stem_direction: Vex.Flow.StaveNote.STEM_DOWN
   }).addGraceNoteGroup(0, {
-	keys: ['e/5'],
-	duration: "32",
-	isGraceNote: true
+	keys: ['e/5']
   }));
 
-  Vex.Flow.Formatter.FormatAndDraw(measure.ctx, measure.stave, notes, 100);
+  Vex.Flow.Formatter.FormatAndDraw(measure.ctx, measure.stave, notes);
   ok(true, "GraceNoteBasic");
 }
 
@@ -82,9 +76,7 @@ Vex.Flow.Test.GraceNote.thrown = function(options, contextBuilder){
 	duration: "q",
 	stem_direction: Vex.Flow.StaveNote.STEM_DOWN
   }).addGraceNoteGroup(0, {
-	keys: ['a/5', 'g/5'],
-	duration: "32",
-	isGraceNote: true
+	keys: ['a/5', 'g/5']
   }));
     
   // G throw on high G
@@ -93,9 +85,7 @@ Vex.Flow.Test.GraceNote.thrown = function(options, contextBuilder){
 	duration: "q",
 	stem_direction: Vex.Flow.StaveNote.STEM_DOWN
   }).addGraceNoteGroup(0, {
-	keys: ['g/5', 'f/5'],
-	duration: "32",
-	isGraceNote: true
+	keys: ['g/5', 'f/5']
   }));
   
   // D throw
@@ -104,12 +94,10 @@ Vex.Flow.Test.GraceNote.thrown = function(options, contextBuilder){
 	duration: "q",
 	stem_direction: Vex.Flow.StaveNote.STEM_DOWN
   }).addGraceNoteGroup(0, {
-	keys: ['g/4', 'd/5', 'c/5'],
-	duration: "32",
-	isGraceNote: true
+	keys: ['g/4', 'd/5', 'c/5']
   }));
   
-  Vex.Flow.Formatter.FormatAndDraw(measure.ctx, measure.stave, notes, 100);
+  Vex.Flow.Formatter.FormatAndDraw(measure.ctx, measure.stave, notes);
   ok(true, "GraceNoteThrows");
 }
 
@@ -127,9 +115,7 @@ Vex.Flow.Test.GraceNote.doublings = function(options, contextBuilder){
 		duration: "q",
 		stem_direction: Vex.Flow.StaveNote.STEM_DOWN
 	  }).addGraceNoteGroup(0, {
-		keys: ['g/5', 'c/5', 'd/5'],
-		duration: "32",
-		isGraceNote: true
+		keys: ['g/5', 'c/5', 'd/5']
 	  }));
   }
   
@@ -139,9 +125,7 @@ Vex.Flow.Test.GraceNote.doublings = function(options, contextBuilder){
 	duration: "q",
 	stem_direction: Vex.Flow.StaveNote.STEM_DOWN
   }).addGraceNoteGroup(0, {
-	keys: ['g/5', 'd/5', 'e/5'],
-	duration: "32",
-	isGraceNote: true
+	keys: ['g/5', 'd/5', 'e/5']
   }));
     
   // E doubling
@@ -150,9 +134,7 @@ Vex.Flow.Test.GraceNote.doublings = function(options, contextBuilder){
 	duration: "q",
 	stem_direction: Vex.Flow.StaveNote.STEM_DOWN
   }).addGraceNoteGroup(0, {
-	keys: ['g/5', 'e/5', 'f/5'],
-	duration: "32",
-	isGraceNote: true
+	keys: ['g/5', 'e/5', 'f/5']
   }));
       
   // F doubling
@@ -161,12 +143,10 @@ Vex.Flow.Test.GraceNote.doublings = function(options, contextBuilder){
 	duration: "q",
 	stem_direction: Vex.Flow.StaveNote.STEM_DOWN
   }).addGraceNoteGroup(0, {
-	keys: ['g/5', 'f/5', 'g/5'],
-	duration: "32",
-	isGraceNote: true
+	keys: ['g/5', 'f/5', 'g/5']
   }));
 
-  Vex.Flow.Formatter.FormatAndDraw(measure.ctx, measure.stave, notes, 100);
+  Vex.Flow.Formatter.FormatAndDraw(measure.ctx, measure.stave, notes);
   ok(true, "GraceNoteDoublings");
 }
 
@@ -181,9 +161,7 @@ Vex.Flow.Test.GraceNote.birls = function(options, contextBuilder){
 	duration: "q",
 	stem_direction: Vex.Flow.StaveNote.STEM_DOWN
   }).addGraceNoteGroup(0, {
-	keys: ['g/4', 'a/4', 'g/4'],
-	duration: "32",
-	isGraceNote: true
+	keys: ['g/4', 'a/4', 'g/4']
   }));
   
   // extra low A birl
@@ -192,9 +170,7 @@ Vex.Flow.Test.GraceNote.birls = function(options, contextBuilder){
 	duration: "q",
 	stem_direction: Vex.Flow.StaveNote.STEM_DOWN
   }).addGraceNoteGroup(0, {
-	keys: ['a/4', 'g/4', 'a/4', 'g/4'],
-	duration: "32",
-	isGraceNote: true
+	keys: ['a/4', 'g/4', 'a/4', 'g/4']
   }));
 
   // G gracenote birl
@@ -203,12 +179,10 @@ Vex.Flow.Test.GraceNote.birls = function(options, contextBuilder){
 	duration: "q",
 	stem_direction: Vex.Flow.StaveNote.STEM_DOWN
   }).addGraceNoteGroup(0, {
-	keys: ['g/5', 'a/4', 'g/4', 'a/4', 'g/4'],
-	duration: "32",
-	isGraceNote: true
+	keys: ['g/5', 'a/4', 'g/4', 'a/4', 'g/4']
   }));
 
-  Vex.Flow.Formatter.FormatAndDraw(measure.ctx, measure.stave, notes, 100);
+  Vex.Flow.Formatter.FormatAndDraw(measure.ctx, measure.stave, notes);
   ok(true, "GraceNoteBirls");
 }
 
@@ -218,9 +192,7 @@ Vex.Flow.Test.GraceNote.grips = function(options, contextBuilder){
   var notes = [];
   
   var grip = {
-	keys: ['g/4', 'd/5', 'g/4'],
-	duration: "32",
-	isGraceNote: true
+	keys: ['g/4', 'd/5', 'g/4']
   };
   
   var validGripNotes = ['b/4', 'c/5', 'e/5', 'f/5', 'g/5', 'a/5'];
@@ -233,7 +205,7 @@ Vex.Flow.Test.GraceNote.grips = function(options, contextBuilder){
 	  }).addGraceNoteGroup(0, grip));
   }
 
-  Vex.Flow.Formatter.FormatAndDraw(measure.ctx, measure.stave, notes, 100);
+  Vex.Flow.Formatter.FormatAndDraw(measure.ctx, measure.stave, notes);
   ok(true, "GraceNoteDoublings");
 }
 
@@ -248,9 +220,7 @@ Vex.Flow.Test.GraceNote.taurluaths = function(options, contextBuilder){
 	duration: "q",
 	stem_direction: Vex.Flow.StaveNote.STEM_DOWN
   }).addGraceNoteGroup(0, {
-	keys: ['g/4', 'd/5', 'g/4', 'e/5'],
-	duration: "32",
-	isGraceNote: true
+	keys: ['g/4', 'd/5', 'g/4', 'e/5']
   }));
   
   // Taurluath on B
@@ -259,9 +229,7 @@ Vex.Flow.Test.GraceNote.taurluaths = function(options, contextBuilder){
 	duration: "q",
 	stem_direction: Vex.Flow.StaveNote.STEM_DOWN
   }).addGraceNoteGroup(0, {
-	keys: ['g/4', 'd/5', 'g/4', 'e/5'],
-	duration: "32",
-	isGraceNote: true
+	keys: ['g/4', 'd/5', 'g/4', 'e/5']
   }));
 
   // Taurluath on C
@@ -270,11 +238,9 @@ Vex.Flow.Test.GraceNote.taurluaths = function(options, contextBuilder){
 	duration: "q",
 	stem_direction: Vex.Flow.StaveNote.STEM_DOWN
   }).addGraceNoteGroup(0, {
-	keys: ['g/4', 'd/5', 'g/4', 'e/5'],
-	duration: "32",
-	isGraceNote: true
+	keys: ['g/4', 'd/5', 'g/4', 'e/5']
   }));
 
-  Vex.Flow.Formatter.FormatAndDraw(measure.ctx, measure.stave, notes, 100);
+  Vex.Flow.Formatter.FormatAndDraw(measure.ctx, measure.stave, notes);
   ok(true, "GraceNoteTaurluaths");
 }
