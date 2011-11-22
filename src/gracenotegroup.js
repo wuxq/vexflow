@@ -13,7 +13,14 @@ Vex.Flow.GraceNoteGroup.prototype.init = function(graceNotes) {
   this.note = null;
   this.index = null;
   this.position = Vex.Flow.Modifier.Position.LEFT;
-  this.graceNotes = graceNotes;
+  if ($.isArray(graceNotes)) {
+  	this.graceNotes = {
+  		keys: graceNotes
+  	};
+  }
+  else {
+	this.graceNotes = graceNotes;
+  }
 }
 
 Vex.Flow.GraceNoteGroup.prototype.getCategory = function() { return "gracenotes"; }
@@ -23,6 +30,27 @@ Vex.Flow.GraceNoteGroup.prototype.setNote = function(note)
 Vex.Flow.GraceNoteGroup.prototype.getIndex = function() { return this.index; }
 Vex.Flow.GraceNoteGroup.prototype.setIndex = function(index) {
   this.index = index; return this; }
+
+Vex.Flow.GraceNoteGroup.ornaments = {
+	graceG: ['g/5'],
+	graceD: ['d/5'],
+	graceE: ['e/5'],
+	throwA: ['a/5', 'g/5'],
+	throwG: ['g/5', 'f/5'],
+	throwD: ['g/4', 'd/5', 'c/5'],
+	doublingLowG: ['g/5', 'g/4', 'd/5'],
+	doublingLowA: ['g/5', 'a/4', 'd/5'],
+	doublingB: ['g/5', 'b/4', 'd/5'],
+	doublingC: ['g/5', 'c/5', 'd/5'],
+	doublingD: ['g/5', 'd/5', 'e/5'],
+	doublingE: ['g/5', 'e/5', 'f/5'],
+	doublingF: ['g/5', 'f/5', 'g/5'],
+	birl: ['g/4', 'a/4', 'g/4'],
+	birlLeadingA: ['a/4', 'g/4', 'a/4', 'g/4'],
+	birlGraceG: ['g/5', 'a/4', 'g/4', 'a/4', 'g/4'],
+	grip: ['g/4', 'd/5', 'g/4'],
+	taorluath: ['g/4', 'd/5', 'g/4', 'e/5']
+};
 
 Vex.Flow.GraceNoteGroup.prototype.draw = function() {
   if (!this.context) throw new Vex.RERR("NoContext",

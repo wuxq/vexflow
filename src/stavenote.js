@@ -292,10 +292,10 @@ Vex.Flow.StaveNote.prototype.addTrill = function(style) {
   return this.addAnnotation(0, new Vex.Flow.Trill(style));
 }
 
-Vex.Flow.StaveNote.prototype.addGraceNoteGroup = function(index, graceNotes) {
+Vex.Flow.StaveNote.prototype.addGraceNoteGroup = function(graceNotes) {
   var graceNoteGroup = new Vex.Flow.GraceNoteGroup(graceNotes);
   graceNoteGroup.setNote(this);
-  graceNoteGroup.setIndex(index);
+  graceNoteGroup.setIndex(0);
   this.modifiers.push(graceNoteGroup);
   this.setPreFormatted(false);
   return this;
