@@ -160,6 +160,12 @@ Vex.Flow.Test.GraceNote.grips = function(options, contextBuilder){
 		stem_direction: Vex.Flow.StaveNote.STEM_DOWN
 	  }).addGraceNoteGroup(Vex.Flow.GraceNoteGroup.ornaments.grip));
   }
+  
+  notes.push(measure.newNote({
+	keys: ['a/4'],
+	duration: "q",
+	stem_direction: Vex.Flow.StaveNote.STEM_DOWN
+  }).addGraceNoteGroup(Vex.Flow.GraceNoteGroup.ornaments.gripFromD));
 
   Vex.Flow.Formatter.FormatAndDraw(measure.ctx, measure.stave, notes);
   ok(true, "GraceNoteDoublings");
@@ -180,6 +186,12 @@ Vex.Flow.Test.GraceNote.taurluaths = function(options, contextBuilder){
 		stem_direction: Vex.Flow.StaveNote.STEM_DOWN
 	  }).addGraceNoteGroup(Vex.Flow.GraceNoteGroup.ornaments.taorluath));
   }
+    
+  notes.push(measure.newNote({
+	keys: ['a/4'],
+	duration: "q",
+	stem_direction: Vex.Flow.StaveNote.STEM_DOWN
+  }).addGraceNoteGroup(Vex.Flow.GraceNoteGroup.ornaments.taorluathFromD));
 
   Vex.Flow.Formatter.FormatAndDraw(measure.ctx, measure.stave, notes);
   ok(true, "GraceNoteTaurluaths");

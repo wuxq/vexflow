@@ -49,7 +49,9 @@ Vex.Flow.GraceNoteGroup.ornaments = {
 	birlLeadingA: ['a/4', 'g/4', 'a/4', 'g/4'],
 	birlGraceG: ['g/5', 'a/4', 'g/4', 'a/4', 'g/4'],
 	grip: ['g/4', 'd/5', 'g/4'],
-	taorluath: ['g/4', 'd/5', 'g/4', 'e/5']
+	gripFromD: ['g/4', 'b/4', 'g/4'],
+	taorluath: ['g/4', 'd/5', 'g/4', 'e/5'],
+	taorluathFromD: ['g/4', 'b/4', 'g/4', 'e/5']
 };
 
 Vex.Flow.GraceNoteGroup.prototype.draw = function() {
