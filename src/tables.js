@@ -409,40 +409,71 @@ Vex.Flow.keySignature.accidentalList = function(acc) {
 }
 
 Vex.Flow.durationToTicks = {
+  "dw":   (Vex.Flow.RESOLUTION / 1) * 2,
+  "dwr":   (Vex.Flow.RESOLUTION / 1) * 2,
   "w":    Vex.Flow.RESOLUTION / 1,
   "wh":   Vex.Flow.RESOLUTION / 1,
   "wm":   Vex.Flow.RESOLUTION / 1,
   "wr":   Vex.Flow.RESOLUTION / 1,
+  "wd":   (Vex.Flow.RESOLUTION / 1) + (Vex.Flow.RESOLUTION / 2),
+  "wdd":   (Vex.Flow.RESOLUTION / 1) + (Vex.Flow.RESOLUTION / 2) +
+      (Vex.Flow.RESOLUTION / 4),
+  "wddd":   (Vex.Flow.RESOLUTION / 1) + (Vex.Flow.RESOLUTION / 2) +
+      (Vex.Flow.RESOLUTION / 4) + (Vex.Flow.RESOLUTION / 8),
   "h":    Vex.Flow.RESOLUTION / 2,
   "hh":   Vex.Flow.RESOLUTION / 2,
   "hm":   Vex.Flow.RESOLUTION / 2,
   "hr":   Vex.Flow.RESOLUTION / 2,
   "hd":   (Vex.Flow.RESOLUTION / 2) + (Vex.Flow.RESOLUTION / 4),
+  "hdd":   (Vex.Flow.RESOLUTION / 2) + (Vex.Flow.RESOLUTION / 4) +
+      (Vex.Flow.RESOLUTION / 8),
+  "hddd":   (Vex.Flow.RESOLUTION / 2) + (Vex.Flow.RESOLUTION / 4) +
+      (Vex.Flow.RESOLUTION / 8) + (Vex.Flow.RESOLUTION / 16),
   "q":    Vex.Flow.RESOLUTION / 4,
   "qh":   Vex.Flow.RESOLUTION / 4,
   "qm":   Vex.Flow.RESOLUTION / 4,
   "qr":   Vex.Flow.RESOLUTION / 4,
   "qd":   (Vex.Flow.RESOLUTION / 4) + (Vex.Flow.RESOLUTION / 8),
+  "qdd":   (Vex.Flow.RESOLUTION / 4) + (Vex.Flow.RESOLUTION / 8) +
+      (Vex.Flow.RESOLUTION / 16),
+  "qddd":   (Vex.Flow.RESOLUTION / 4) + (Vex.Flow.RESOLUTION / 8) +
+      (Vex.Flow.RESOLUTION / 16) + (Vex.Flow.RESOLUTION / 32),
   "8":    Vex.Flow.RESOLUTION / 8,
   "8h":   Vex.Flow.RESOLUTION / 8,
   "8m":   Vex.Flow.RESOLUTION / 8,
   "8r":   Vex.Flow.RESOLUTION / 8,
   "8d":   (Vex.Flow.RESOLUTION / 8) + (Vex.Flow.RESOLUTION / 16),
+  "8dd":   (Vex.Flow.RESOLUTION / 8) + (Vex.Flow.RESOLUTION / 16) +
+      (Vex.Flow.RESOLUTION / 32),
+  "8ddd":   (Vex.Flow.RESOLUTION / 8) + (Vex.Flow.RESOLUTION / 16) +
+      (Vex.Flow.RESOLUTION / 32) + (Vex.Flow.RESOLUTION / 64),
   "16":   Vex.Flow.RESOLUTION / 16,
   "16h":  Vex.Flow.RESOLUTION / 16,
   "16m":  Vex.Flow.RESOLUTION / 16,
   "16r":  Vex.Flow.RESOLUTION / 16,
   "16d":  (Vex.Flow.RESOLUTION / 16) + (Vex.Flow.RESOLUTION / 32),
+  "16dd":   (Vex.Flow.RESOLUTION / 16) + (Vex.Flow.RESOLUTION / 32) +
+      (Vex.Flow.RESOLUTION / 64),
+  "16ddd":   (Vex.Flow.RESOLUTION / 16) + (Vex.Flow.RESOLUTION / 32) +
+      (Vex.Flow.RESOLUTION / 64) + (Vex.Flow.RESOLUTION / 128),
   "32":   Vex.Flow.RESOLUTION / 32,
   "32h":  Vex.Flow.RESOLUTION / 32,
   "32m":  Vex.Flow.RESOLUTION / 32,
   "32d":  (Vex.Flow.RESOLUTION / 32) + (Vex.Flow.RESOLUTION / 64),
+  "32dd":   (Vex.Flow.RESOLUTION / 32) + (Vex.Flow.RESOLUTION / 64) +
+      (Vex.Flow.RESOLUTION / 128),
+  "32ddd":   (Vex.Flow.RESOLUTION / 32) + (Vex.Flow.RESOLUTION / 64) +
+      (Vex.Flow.RESOLUTION / 128) + (Vex.Flow.RESOLUTION / 256),
   "32r":  Vex.Flow.RESOLUTION / 32,
   "b":    Vex.Flow.RESOLUTION / 32,
   "64":   Vex.Flow.RESOLUTION / 64,
   "64h":  Vex.Flow.RESOLUTION / 64,
   "64m":  Vex.Flow.RESOLUTION / 64,
   "64d":  (Vex.Flow.RESOLUTION / 64) + (Vex.Flow.RESOLUTION / 128),
+  "64dd":   (Vex.Flow.RESOLUTION / 64) + (Vex.Flow.RESOLUTION / 128) +
+      (Vex.Flow.RESOLUTION / 256),
+  "64ddd":   (Vex.Flow.RESOLUTION / 64) + (Vex.Flow.RESOLUTION / 128) +
+      (Vex.Flow.RESOLUTION / 256) + (Vex.Flow.RESOLUTION / 512),
   "64r":  Vex.Flow.RESOLUTION / 64
 };
 
@@ -451,13 +482,35 @@ Vex.Flow.durationToGlyph = function(duration) {
 }
 
 Vex.Flow.durationIsDotted = function(duration) {
-  var ret = Vex.Flow.durationToGlyph.duration_codes[duration].dot;
-  if (ret == undefined)
+  var duration_code = Vex.Flow.durationToGlyph.duration_codes[duration];
+  if (duration_code == undefined)
     return false;
-  return ret;
+
+  var dots = duration_code.dots;
+  if (dots == undefined)
+    return false;
+
+  return (dots > 0);
 }
 
 Vex.Flow.durationToGlyph.duration_codes = {
+  "dw": { // Double whole note
+    code_head: "v53",
+    code_rest: "v31",
+    head_width: 16.5,
+    stem: false,
+    stem_offset: 0,
+    flag: false
+  },
+  "dwr": { // Double whole rest
+    code_head: "v31",
+    head_width: 10.5,
+    stem: false,
+    stem_offset: 0,
+    flag: false,
+    rest: true,
+    position: "D/5"
+  },
   "w": { // Whole note
     code_head: "v1d",
     code_rest: "v5c",
@@ -490,6 +543,33 @@ Vex.Flow.durationToGlyph.duration_codes = {
     flag: false,
     rest: true,
     position: "D/5"
+  },
+  "wd": { // Dotted whole note
+    code_head: "v1d",
+    code_rest: "v5c",
+    head_width: 16.5,
+    stem: false,
+    stem_offset: 0,
+    flag: false,
+    dots: 1
+  },
+  "wdd": { // Double-dotted whole note
+    code_head: "v1d",
+    code_rest: "v5c",
+    head_width: 16.5,
+    stem: false,
+    stem_offset: 0,
+    flag: false,
+    dots: 2
+  },
+  "wddd": { // Triple-dotted whole note
+    code_head: "v1d",
+    code_rest: "v5c",
+    head_width: 16.5,
+    stem: false,
+    stem_offset: 0,
+    flag: false,
+    dots: 3
   },
   "h": { // Half note
     code_head: "v81",
@@ -531,7 +611,25 @@ Vex.Flow.durationToGlyph.duration_codes = {
     stem: true,
     stem_offset: 0,
     flag: false,
-    dot: true
+    dots: 1
+  },
+  "hdd": { // Double-dotted half note
+    code_head: "v81",
+    code_rest: "vc",
+    head_width: 10.5,
+    stem: true,
+    stem_offset: 0,
+    flag: false,
+    dots: 2
+  },
+  "hddd": { // Triple-dotted half note
+    code_head: "v81",
+    code_rest: "vc",
+    head_width: 10.5,
+    stem: true,
+    stem_offset: 0,
+    flag: false,
+    dots: 3
   },
   "q": { // Quarter note
     code_head: "vb",
@@ -573,7 +671,25 @@ Vex.Flow.durationToGlyph.duration_codes = {
     stem: true,
     stem_offset: 0,
     flag: false,
-    dot: true
+    dots: 1
+  },
+  "qdd": { // Double-dotted quarter note
+    code_head: "vb",
+    code_rest: "v7c",
+    head_width: 10.5,
+    stem: true,
+    stem_offset: 0,
+    flag: false,
+    dots: 2
+  },
+  "qddd": { // Triple-dotted quarter note
+    code_head: "vb",
+    code_rest: "v7c",
+    head_width: 10.5,
+    stem: true,
+    stem_offset: 0,
+    flag: false,
+    dots: 3
   },
   "8": { // Eighth note
     code_head: "vb",
@@ -628,7 +744,31 @@ Vex.Flow.durationToGlyph.duration_codes = {
     beam_count: 1,
     code_flag_upstem: "v54",
     code_flag_downstem: "v9a",
-    dot: true
+    dots: 1
+  },
+  "8dd": { // Double-dotted eighth note
+    code_head: "vb",
+    code_rest: "va5",
+    head_width: 10.5,
+    stem: true,
+    stem_offset: 0,
+    flag: true,
+    beam_count: 1,
+    code_flag_upstem: "v54",
+    code_flag_downstem: "v9a",
+    dots: 2
+  },
+  "8ddd": { // Triple-dotted eighth note
+    code_head: "vb",
+    code_rest: "va5",
+    head_width: 10.5,
+    stem: true,
+    stem_offset: 0,
+    flag: true,
+    beam_count: 1,
+    code_flag_upstem: "v54",
+    code_flag_downstem: "v9a",
+    dots: 3
   },
   "16": { // Sixteenth note
     beam_count: 2,
@@ -683,7 +823,31 @@ Vex.Flow.durationToGlyph.duration_codes = {
     flag: true,
     code_flag_upstem: "v3f",
     code_flag_downstem: "v8f",
-    dot: true
+    dots: 1
+  },
+  "16dd": { // Double-dotted Sixteenth note
+    beam_count: 2,
+    code_head: "vb",
+    code_rest: "v3c",
+    head_width: 10.5,
+    stem: true,
+    stem_offset: 0,
+    flag: true,
+    code_flag_upstem: "v3f",
+    code_flag_downstem: "v8f",
+    dots: 2
+  },
+  "16ddd": { // Triple-dotted Sixteenth note
+    beam_count: 2,
+    code_head: "vb",
+    code_rest: "v3c",
+    head_width: 10.5,
+    stem: true,
+    stem_offset: 0,
+    flag: true,
+    code_flag_upstem: "v3f",
+    code_flag_downstem: "v8f",
+    dots: 3
   },
   "32": { // Thirty-second note
     beam_count: 3,
@@ -723,7 +887,29 @@ Vex.Flow.durationToGlyph.duration_codes = {
     code_head: "vb",
     code_rest: "v55",
     head_width: 10.5,
-    dot: true,
+    dots: 1,
+    flag: true,
+    code_flag_upstem: "v47",
+    code_flag_downstem: "v2a",
+    stem: true
+  },
+  "32dd": { // Double-dotted Thirty-second note
+    beam_count: 3,
+    code_head: "vb",
+    code_rest: "v55",
+    head_width: 10.5,
+    dots: 2,
+    flag: true,
+    code_flag_upstem: "v47",
+    code_flag_downstem: "v2a",
+    stem: true
+  },
+  "32ddd": { // Triple-dotted Thirty-second note
+    beam_count: 3,
+    code_head: "vb",
+    code_rest: "v55",
+    head_width: 10.5,
+    dots: 3,
     flag: true,
     code_flag_upstem: "v47",
     code_flag_downstem: "v2a",
@@ -777,7 +963,29 @@ Vex.Flow.durationToGlyph.duration_codes = {
     code_head: "vb",
     code_rest: "v38",
     head_width: 10.5,
-    dot: true,
+    dots: 1,
+    flag: true,
+    code_flag_upstem: "va9",
+    code_flag_downstem: "v58",
+    stem: true
+  },
+  "64dd": { // Double-dotted Sixty-fourth note
+    beam_count: 3,
+    code_head: "vb",
+    code_rest: "v38",
+    head_width: 10.5,
+    dots: 2,
+    flag: true,
+    code_flag_upstem: "va9",
+    code_flag_downstem: "v58",
+    stem: true
+  },
+  "64ddd": { // Triple-dotted Sixty-fourth note
+    beam_count: 3,
+    code_head: "vb",
+    code_rest: "v38",
+    head_width: 10.5,
+    dots: 3,
     flag: true,
     code_flag_upstem: "va9",
     code_flag_downstem: "v58",

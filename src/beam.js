@@ -34,9 +34,9 @@ Vex.Flow.Beam.prototype.init = function(notes) {
   this.stem_direction = notes[0].getStemDirection();
   this.ticks = notes[0].getTicks();
 
-  if (this.ticks > Vex.Flow.durationToTicks["8d"]) {
+  if (this.ticks >= Vex.Flow.durationToTicks["q"]) {
     throw new Vex.RuntimeError("BadArguments",
-        "Beams can be at most dotted eighth notes.");
+        "Beams can only be applied to notes shorter than a quarter note.");
   }
 
   for (var i = 1; i < notes.length; ++i) {
@@ -201,7 +201,7 @@ Vex.Flow.Beam.prototype.draw = function(notes) {
     return beam_lines;
   }
 
-  var valid_beam_durations = ["8d", "16d", "32d", "64d"];
+  var valid_beam_durations = ["8ddd", "16ddd", "32ddd", "64ddd"];
 
   // Draw the beams.
   for (var i = 0; i < valid_beam_durations.length; ++i) {
