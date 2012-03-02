@@ -26,6 +26,7 @@ Vex.Flow.StaveNote.prototype.init = function(note_struct) {
 
   this.keys = note_struct.keys;
   this.clef = note_struct.clef;
+  this.grace_note = (note_struct.grace_note === true);
 
   // Pull note rendering properties from duration.
   this.glyph = Vex.Flow.durationToGlyph(this.duration);
@@ -84,6 +85,13 @@ Vex.Flow.StaveNote.prototype.init = function(note_struct) {
     stroke_px: 3,         // number of stroke px to the left and right of head
     stroke_spacing: 10,    // spacing between strokes (TODO: take from stave)
     annotation_spacing: 5 // spacing above note for annotations
+  }
+
+  if (this.isGraceNote()) {
+    this.render_options.glyph_font_scale = 17;
+    this.render_options.stem_height = 20;
+    this.render_options.stroke_px = 2;
+    this.glyph.head_width = 4.5;  	
   }
 
   this.setStemDirection(note_struct.stem_direction);
@@ -211,6 +219,10 @@ Vex.Flow.StaveNote.prototype.setBeam = function(beam) {
   return this;
 }
 
+Vex.Flow.StaveNote.prototype.isGraceNote = function() {
+  return this.grace_note;
+}
+
 Vex.Flow.StaveNote.prototype.addToModifierContext = function(mc) {
   this.setModifierContext(mc);
   for (var i = 0; i < this.modifiers.length; ++i) {
@@ -271,6 +283,19 @@ Vex.Flow.StaveNote.prototype.addDotToAll = function() {
   return this;
 }
 
+Vex.Flow.StaveNote.prototype.addTrill = function(style) {
+  return this.addAnnotation(0, new Vex.Flow.Trill(style));
+}
+
+Vex.Flow.StaveNote.prototype.addGraceNoteGroup = function(graceNotes) {
+  var graceNoteGroup = new Vex.Flow.GraceNoteGroup(graceNotes);
+  graceNoteGroup.setNote(this);
+  graceNoteGroup.setIndex(0);
+  this.modifiers.push(graceNoteGroup);
+  this.setPreFormatted(false);
+  return this;
+}
+
 Vex.Flow.StaveNote.prototype.getAccidentals = function() {
   return this.modifierContext.getModifiers("accidentals");
 }
@@ -278,7 +303,6 @@ Vex.Flow.StaveNote.prototype.getAccidentals = function() {
 Vex.Flow.StaveNote.prototype.getDots = function() {
   return this.modifierContext.getModifiers("dots");
 }
-
 
 Vex.Flow.StaveNote.prototype.getVoiceShiftWidth = function() {
   // TODO: may need to accomodate for dot here.
