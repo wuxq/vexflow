@@ -34,7 +34,7 @@ Vex.Flow.Beam.prototype.init = function(notes) {
   this.stem_direction = notes[0].getStemDirection();
   this.ticks = notes[0].getTicks();
 
-  if (this.ticks >= Vex.Flow.durationToTicks["q"]) {
+  if (this.ticks >= Vex.Flow.durationToTicks("4")) {
     throw new Vex.RuntimeError("BadArguments",
         "Beams can only be applied to notes shorter than a quarter note.");
   }
@@ -54,8 +54,7 @@ Vex.Flow.Beam.prototype.init = function(notes) {
   }
 
   this.notes = notes;
-  this.beam_count =
-    Vex.Flow.durationToGlyph(this.notes[0].getDuration()).beam_count;
+  this.beam_count = this.notes[0].getGlyph().beam_count;
   this.render_options = {
     beam_width: 5,
     max_slope: 0.25,
@@ -170,8 +169,8 @@ Vex.Flow.Beam.prototype.draw = function(notes) {
       var note = that.notes[i];
       var ticks = note.getTicks();
 
-      // Atleast 8th note
-      if (ticks <= Vex.Flow.durationToTicks[duration]) {
+      // Check whether to apply beam(s)
+      if (ticks < Vex.Flow.durationToTicks(duration)) {
         if (!beam_started) {
           beam_lines.push({start: note.getStemX(), end: null});
           beam_started = true;
@@ -207,7 +206,7 @@ Vex.Flow.Beam.prototype.draw = function(notes) {
     return beam_lines;
   }
 
-  var valid_beam_durations = ["8ddd", "16ddd", "32ddd", "64ddd"];
+  var valid_beam_durations = ["4", "8", "16", "32"];
 
   // Draw the beams.
   for (var i = 0; i < valid_beam_durations.length; ++i) {
