@@ -54,8 +54,14 @@ Vex.Flow.Annotation.prototype.setFont = function(family, size, weight) {
   return this;
 }
 Vex.Flow.Annotation.prototype.setBottom = function(bottom) {
-  this.vert_justification = Vex.Flow.Annotation.VerticalJustify.BOTTOM
+  this.vert_justification =
+    bottom ? Vex.Flow.Annotation.VerticalJustify.BOTTOM :
+      Vex.Flow.Annotation.VerticalJustify.TOP;
   return this;
+}
+
+Vex.Flow.Annotation.prototype.getVerticalJustification = function() {
+  return this.vert_justification;
 }
 Vex.Flow.Annotation.prototype.setVerticalJustification = function(
     vert_justification) {
