@@ -1,0 +1,3 @@
+[submodule "vexml"]
+	path = vexml
+	url = git@github.com:ringw/vexml.git

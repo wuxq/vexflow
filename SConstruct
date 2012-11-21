@@ -39,12 +39,22 @@ SConscript("src/SConstruct", variant_dir="build/vexflow", duplicate=0)
 # Build TabDiv
 SConscript("tabdiv/SConstruct", variant_dir="build/tabdiv", duplicate=0)
 
+# Build VeXML
+SConscript("vexml/SConstruct", variant_dir="build/vexml", duplicate=0)
+
 # Create Zip archives for distribution
 
 Zip("build/tabdiv-free.zip",
       ["build/vexflow/vexflow-free.js",
        "build/tabdiv/vextabdiv-free.js",
        "tabdiv/tabdiv.css"])
+Zip("build/vexflow-musicxml-free.zip",
+      ["build/vexflow/vexflow-free.js",
+       "build/vexml/vexflow-musicxml-free.js",
+       "build/vexml/musicxml-viewer.js",
+       "tests/support/jquery.js",
+       "vexml/tests/viewer-ajax.html",
+       "vexml/samples"])
 
 # Copy over tests for distribution
 
