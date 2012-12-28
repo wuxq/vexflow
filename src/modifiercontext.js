@@ -74,18 +74,41 @@ Vex.Flow.ModifierContext.prototype.formatNotes = function() {
   var top_note = notes[0];
   var bottom_note = notes[1];
 
+  var top_min_line, top_max_line, bottom_min_line, bottom_max_line;
+
   // If notes intersect, then shift the bottom stemmed note right
+  var top_keys = top_note.getKeyProps();
+  var bottom_keys = bottom_note.getKeyProps();
   if (notes[0].getStemDirection() == Vex.Flow.StaveNote.STEM_DOWN) {
     bottom_note = notes[0];
     top_note = notes[1];
+    bottom_keys = bottom_note.getKeyProps();
+    top_keys = top_note.getKeyProps();
   }
+  else {
+    // Swap if necessary
+    top_keys.forEach(function(k) {
+      if (isNaN(top_max_line) || k.line > top_max_line) top_max_line = k.line;
+    });
+    bottom_keys.forEach(function(k) {
+      if (isNaN(bottom_min_line) || k.line<bottom_min_line) bottom_min_line=k.line;
+    });
+    if (bottom_min_line > top_max_line) {
+      bottom_note = notes[0];
+      top_note = notes[1];
+      bottom_max_line = top_max_line; top_max_line = undefined;
+      top_min_line = bottom_min_line; bottom_min_line = undefined;
+    }
+  }
+  if (isNaN(top_min_line)) top_keys.forEach(function(k) {
+    if (isNaN(top_min_line) || k.line < top_min_line) top_min_line = k.line;
+  });
+  if (isNaN(bottom_max_line)) bottom_keys.forEach(function(k) {
+    if (isNaN(bottom_max_line)||k.line>bottom_max_line) bottom_max_line=k.line;
+  });
 
-  var top_keys = top_note.getKeyProps();
-  var bottom_keys = bottom_note.getKeyProps();
-
-  // XXX: Do this right (by key, not whole note).
   var x_shift = 0;
-  if (top_keys[0].line <= (bottom_keys[bottom_keys.length - 1].line + 0.5)) {
+  if (top_min_line <= (bottom_max_line + 0.5)) {
      x_shift = top_note.getVoiceShiftWidth();
      bottom_note.setXShift(x_shift);
   }
