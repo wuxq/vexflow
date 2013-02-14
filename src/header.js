@@ -1,6 +1,6 @@
 /**
  * @preserve
- * VexFlow Engraver __VEX_VERSION__
+ * VexFlow Engraver + Document/MusicXML/LilyPond __VEX_VERSION__
  * A library for rendering musical notation and guitar tablature in HTML5.
  *
  *                    http://www.vexflow.com

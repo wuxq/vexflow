@@ -64,9 +64,13 @@ vexflow_sources = [
     "strokes.js",
     "measure.js",
     "musicxml.js",
+    "lilypond.js",
+    "lilypond-parser.js",
     "document.js",
     "documentformatter.js"
     ]
 
 Import('dbg opt')
+default_env.PegJS("lilypond-parser",
+                  EXPORT_VAR="Vex.Flow.Backend.LilyPond.prototype.parser")
 build_and_stamp("vexflow-min.js", vexflow_sources, opt);

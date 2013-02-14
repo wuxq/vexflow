@@ -61,11 +61,22 @@ def vexflow_stamper(target, source, env):
   os.system(env.subst(cmd))
 
 """
+Custom generator for PegJS
+"""
+def pegjs_generator(source, target, env, for_signature, export_var=None):
+  command = "~/node_modules/.bin/pegjs "
+  print export_var
+  command += "$SOURCE $TARGET"
+  return command
+
+"""
 Add our custom builders to the environment.
 """
 default_env.Append(
     BUILDERS = {'JavaScript': Builder(action = js_builder),
-                'VexFlowStamp': Builder(action = vexflow_stamper)})
+                'VexFlowStamp': Builder(action = vexflow_stamper),
+                'PegJS': Builder(action = "~/node_modules/.bin/pegjs --export-var '$EXPORT_VAR' $SOURCE $TARGET",
+                                 suffix = '.js', src_suffix = '.peg')})
 
 def build_and_stamp(target, sources, env):
   """
