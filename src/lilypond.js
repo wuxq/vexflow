@@ -139,7 +139,11 @@ Vex.Flow.Backend.LilyPond.prototype.getMeasureRelative = function(v, m) {
       n.accidentals = [];
       n.absolute_keys = n.keys.map(function(k) {
         var key = this.parseKey(k, keyRelative);
-        n.accidentals.push(key.accidentals);
+        if (k[k.length-1] == '!') console.log(k.toString() + " -> " + key.accidentals);
+        if (key.accidentals == null)
+          n.accidentals = null; // Decide all accidentals in note automatically
+        else if (n.accidentals)
+          n.accidentals.push(key.accidentals);
         keyRelative = key.keys;
         return keyRelative;
       }, this);
@@ -172,6 +176,7 @@ Vex.Flow.Backend.LilyPond.prototype.getMeasure = function(m) {
   var measure = new Vex.Flow.Measure({time: attrs.time});
   var part = measure.getPart(0); // TODO: Multiple parts
   part.options.clef = "treble";
+  part.options.key = "C"; // FIXME: key
   part.setNumberOfStaves(this.staves.length);
   // Array of voice number -> stave number
   var voicesToStaves = [];
@@ -193,7 +198,9 @@ Vex.Flow.Backend.LilyPond.prototype.getMeasure = function(m) {
         return;
       }
       if (n.duration) attrs.duration[v] = n.duration.toString();
-      voice.addNote({keys: n.absolute_keys, duration: attrs.duration[v],
+      voice.addNote({keys: n.absolute_keys,
+                     duration: attrs.duration[v],
+                     accidentals: n.accidentals,
                      beam: (n.beam == "start") ? "begin" : (n.beam || null),
                      rest: (n.type == "rest")});
     });

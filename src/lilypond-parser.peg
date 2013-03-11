@@ -73,8 +73,8 @@ measureNum = "%" space* n:[0-9]+ { return parseInt(n.join('')) }
 
 noteAcc = "es"+ / "is"+
 noteOctave = plus:("'"+) { return new Array(plus.length+1).join("'") } / minus:(","+) { return new Array(minus.length+1).join(",") }
-notePitch = pitch:[a-g] acc:noteAcc? octave:noteOctave? {
-  return pitch + acc + octave
+notePitch = pitch:[a-g] acc:noteAcc? octave:noteOctave? forceAcc:([!?]?) {
+  return pitch + acc + octave + forceAcc
 }
 
 noteDuration = d:[0-9]+ { return parseInt(d.join('')) }
