@@ -157,8 +157,8 @@ Vex.Flow.DocumentFormatter.prototype.getVexflowVoice =function(voice, staves){
   var clef = staves[voice.stave].clef;
   var lyricVoice = null;
   for (var i = 0; i < voice.notes.length; i++) {
-    var note = voice.notes[i];
-    var vfNote = this.getVexflowNote(voice.notes[i], {clef: clef});
+    var note = Vex.Merge({clef: clef}, voice.notes[i]);
+    var vfNote = this.getVexflowNote(note, {clef: clef});
     if (note.beam == "begin") beamedNotes = [vfNote];
     else if (note.beam && beamedNotes) {
       beamedNotes.push(vfNote);
@@ -220,6 +220,22 @@ Vex.Flow.DocumentFormatter.prototype.getVexflowNote = function(note, options) {
   note_struct.keys = note.keys;
   note_struct.duration = note.duration;
   if (note.stem_direction) note_struct.stem_direction = note.stem_direction;
+  if (note.rest) {
+    if (! (note.keys && note.keys.length)) {
+      // TODO: More default rest positions
+      switch (note.clef || "treble") {
+        case "treble":
+          note_struct.keys = ["b/4"];
+          break;
+        case "bass":
+          note_struct.keys = ["d/3"];
+          break;
+      }
+    }
+    if (typeof note.duration != "string"
+        || note.duration[note.duration.length-1] != "r")
+      note_struct.duration = note.duration.toString() + "r";
+  }
   var vfNote = new Vex.Flow.StaveNote(note_struct);
   var i = 0;
   if (note.accidentals instanceof Array)
