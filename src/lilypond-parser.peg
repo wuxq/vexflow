@@ -1,57 +1,109 @@
+{
+  var variables = {}; // Store all variables defined while parsing
+}
+
 start
-  = space* header space* (version space*)?
-    voices:(keyword space* "=" space* voice space*)+ score:score space*
-    { var v = {};
-      voices.forEach(function(voice) { v[voice[0].join('')] = voice[4] });
-      return {voices: v, score: score}; }
+  = space? exprs:(
+      "\\version" space? version:str space? { return {} }
+    / header space? { return {} }
+    / k:keyword space? "=" space? m:musicBlock space? {
+        var variables = {};
+        variables[k] = m;
+        return {variables: variables};
+      }
+    / ("\\score" space?)? m:musicBlock space? { return { score: m } }
+  )+ {
+    var variables = {};
+    var score = null;
+    exprs.forEach(function(e) {
+      if (e.variables) {
+        for (v in e.variables) variables[v] = e.variables[v];
+      }
+      if (e.score) {
+        if (score) {
+          throw new Vex.RERR("InvalidLilyPond",
+                  "Multiple scores not supported");
+        }
+        score = e.score;
+      }
+    });
+    function interpolate(musicExpr) {
+      // Interpolate musicExpr with variables
+      if (musicExpr instanceof Array)
+        return musicExpr.map(interpolate);
+      else if ('variable' in musicExpr) {
+        if (! musicExpr.variable in variables)
+          throw new Vex.RERR('InvalidLilyPond', 'Variable not defined');
+        return interpolate(variables[musicExpr.variable]);
+      }
+      else if ('music' in musicExpr) {
+        // Copy from musicExpr
+        var newExpr = {};
+        for (i in musicExpr) newExpr[i] = musicExpr[i];
+        newExpr.music = interpolate(musicExpr.music);
+        return newExpr;
+      }
+      else return musicExpr;
+    }
+    return interpolate(score);
+  }
 
-header = "\\header" space* dict
+header = "\\header" space? dict
 
-dict = "{" space* (keyword space* "=" space* keyvalue space*)* "}"
+dict = "{" space? (keyword space? "=" space? keyvalue space?)* "}"
 
-keyword = word:[a-zA-Z]+ { return word; }
+keyword = word:([a-zA-Z])+ { return word.join(''); }
 keyvalue
   = str:str { return str; }
-  / "\\markup" space* markup
+  / "\\markup" space? markup
 
-markup = "{" space* (markupExpr space*)* "}"
-markupExpr
+markup = "{" space? (markupExpr space?)* "}"
+markupExpr /* Allow arbitrary characters with nesting braces */
   = markup
-  / "\\" keyword:([a-zA-Z\-]+)
-  / "#'(" space* keyword:([a-zA-Z\-]+) space* "." space* num:("-"?[0-9]+("."[0-9]+)?) space* ")"
-  / "#" num:("-"?[0-9]+("."[0-9]+)?)
-  / "#" str:str
-  / "#(" (space* [a-zA-Z\-:]+ / space* [0-9]+)* ")"
-  / text:([^\"\'\{\}\\\#' '\t\r\n]+) // XXX: find what characters are ok
+  / text:([^{}]+)
 
-version
-  = "\\version" space+ version:str { return version; }
+musicBlock 
+  = // Music delimited by braces, possibly with multiple Staves/Voices
+    "{" space? m:musicExpr space? "}" { return m }
+  // Music block inside a context, relative, etc.
+  / "\\" ("context" / "new") space "Staff" space m:musicBlock {
+    return {type: "stave", music: m} }
+  / "\\" ("context" / "new") space "Voice" space m:musicBlock {
+    return {type: "voice", music: m} }
+  / "\\relative" space n:notePitch space m:musicBlock {
+    m[0][0].relative = n;
+    return m; }
+  // Interpolated variable
+  / "\\" variable:([A-z]+) { return {variable: variable.join('')} }
+    // Simultaneous contexts
+  / "<<" space? blocks:(musicBlock space?)+ ">>" {
+    return blocks.map(function(l){return l[0]}) }
 
-voice
-  = "\\relative" space+ n:notePitch space* "{" space*
-    measures:(measure space*)+ ("\\bar" space* str space*)? "}" {
-      var result = {};
-      result.measures = measures.map(function(m) { return m[0] });
-      result.relative = n;
-      return result;
+musicExpr // Split music into multiple measures
+  = space? measures:(notes space? measureSep space?)*
+           lastMeasure:notes space? {
+      return measures.map(function(l){return l[0]}).concat([lastMeasure]);
     }
+measureSep = "|"
 
-measure = notes:notegroup space* "|" space* n:measureNum {
-  return {measure: n, notes: notes} }
-
-notegroup
-  = groups:(space* n:(note / rest / chord) { return [n] }
-      / space* [\.!~]  { return [] } // ???
-      / space* "\\clef" space* clef:str { return [{clef: clef}] }
-      / space* noteCommands { return [] }
-      / "\\arpeggio_" { return [] }
-      / "\\fermata" { return [] }
-      / "[" space* notes:notegroup space* "]" {
+notes // Notes/commands in a single measure
+  = groups:(
+        n:(note / rest / chord) space? { return [n] }
+      / [\.!~] space? { return [] } // ???
+      / "\\clef" space? clef:str space? { return [{clef: clef}] }
+      / noteCommands space? { return [] }
+      / "\\bar" space? "\"" [^"]+ "\"" space? { return [] }
+      / "\\" [A-z_]+ space? { return [] }
+      / "[" space? notes:notes space? "]" space? {
           // previous note has start of beam
           notes.slice(0, notes.length-1).forEach(function(n) {
             n.beam = "continue";
           });
           notes[notes.length-1].beam = "end";
+          return notes;
+        }
+      / "(" space? notes:notes space? ")" space? {
+          // TODO: slur
           return notes;
         }
       )* {
@@ -69,17 +121,21 @@ notegroup
         }
       }
 
-measureNum = "%" space* n:[0-9]+ { return parseInt(n.join('')) }
-
-noteAcc = "es"+ / "is"+
+noteAcc = flat:"es"+ { return new Array(flat.length+1).join('b') }
+        / sharp:"is"+{ return new Array(sharp.length+1).join('#') }
 noteOctave = plus:("'"+) { return new Array(plus.length+1).join("'") } / minus:(","+) { return new Array(minus.length+1).join(",") }
-notePitch = pitch:[a-g] acc:noteAcc? octave:noteOctave? forceAcc:([!?]?) {
-  return pitch + acc + octave + forceAcc
-}
+notePitch
+  = acc:noteAcc octave:noteOctave? forceAcc:([!?]?) {
+      // Allow missing pitch where previous pitch is used implicitly
+      return acc + octave + forceAcc
+    }
+  / pitch:[a-g] acc:noteAcc? octave:noteOctave? forceAcc:([!?]?) {
+      return pitch + acc + octave + forceAcc
+    }
 
-noteDuration = d:[0-9]+ { return parseInt(d.join('')) }
+noteDuration = d:[0-9]+ dots:([\.]+)? { return(d.join('') + new Array(dots.length+1).join('d')) }
 
-noteCommands = "^" ("\\" [a-zA-Z]+)+
+noteCommands = "^" (space? "\\" [a-zA-Z]+)+
 
 note = p:notePitch d:noteDuration? noteCommands? {
   return {keys: [p], duration: d} }
@@ -87,16 +143,14 @@ note = p:notePitch d:noteDuration? noteCommands? {
 rest = "r" d:noteDuration? noteCommands? { return {type: "rest", duration: d} }
      / n:note "^\\rest" { n.type = "rest"; return n; }
 
-chord = "<" space* keys:(notePitch space*)+ ">" d:noteDuration? noteCommands? {
+chord = "<" space? keys:(notePitch space?)+ ">" d:noteDuration? noteCommands? {
   return {keys: keys.map(function(l) { return l[0] }), duration: d} }
 
-score
-  = "\\score" space* "{"
-    (space* "\\context" space+ [^ \t\r\n]+ space+ dumbMarkup
-     / space* "\\" [a-zA-Z\-]+ space+ markup)*
-    space* "}" { return { staves: [["voiceone"], ["voicetwo"]] } } // FIXME
+
 
 str = "\"" str:([^"]+) "\"" { return str.join(""); }
-space = [' '\t\r\n]
-
-dumbMarkup = "<<" ([^<>]+ / dumbMarkup)* ">>"
+space
+  = ([ \t\r\n]
+  / "%" [ \t] ("\r\n" / "\n" / "\r") // Single-line comment
+  / "%{" [^%]* "%}" // Multi-line comment
+  )+

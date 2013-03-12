@@ -18,7 +18,7 @@ Vex.Flow.Backend.LilyPond = function() {
 
 Vex.Flow.Backend.LilyPond.appearsValid = function(data) {
   if (typeof data != "string") return false;
-  return data.replace(/^\s+/, "").toLowerCase().indexOf("\\header") == 0;
+  return data.replace(/^\s+/, "").indexOf("\\") == 0;
 }
 
 Vex.Flow.Backend.LilyPond.prototype.parse = function(data) {
@@ -82,20 +82,21 @@ Vex.Flow.Backend.LilyPond.prototype.parseKey = function(note, base) {
   }
   var match;
   // Parse LilyPond note
-  if (! (match = note.match(/^([a-g])(([ei]s)*)(('|,)*)$/i)))
+  if (! (match = note.match(/^([a-g]?)((b|#)*)(('|,)*)$/i)))
     throw new Vex.RERR("InvalidLilyPond",
         "Not a LilyPond note: '" + note + "'");
-  var pitch = match[1].toLowerCase();
-  var accidentals = {"": "n", es: "b", eses: "bb", is: "#", isis: "##"
-      }[match[2].toLowerCase()];
+  var pitch = match[1].toLowerCase() || null;
+  var accidentals = match[2].toLowerCase() || "n";
   if (typeof accidentals == "undefined")
-    throw new Vex.RERR("InvalidLilyPond", "Bad accidentals: '"+match[1]+"'");
+    throw new Vex.RERR("InvalidLilyPond", "Bad accidentals: '"+match[2]+"'");
   var relOctave = match[4].length * (match[4][0] == "'" ? 1 : -1);
   var octave;
   if (base) {
     // Relative mode
     if (! (match = base.match(/^([a-g])(#+|b+|n+)?\/([0-9]+)/i)))
       throw new Vex.RERR("InvalidArgument", "Bad base note");
+    // Use base pitch for this note if pitch implied
+    if (pitch == null) pitch = match[1].toLowerCase();
     // Base pitch to integer 0-6 (for c-b); 97 is char code for "a"
     var basePitchNum = (match[1].toLowerCase().charCodeAt() - 97 - 2 + 7) % 7;
     var baseOctave = parseInt(match[3]);
@@ -106,6 +107,9 @@ Vex.Flow.Backend.LilyPond.prototype.parseKey = function(note, base) {
     else if (pitchNum - basePitchNum <= -4) octave++;
   }
   else {
+    // Pitch required in this case
+    if (pitch == null) throw new Vex.RERR("InvalidLilyPond",
+                                    "Note with implied pitch requires base");
     // Absolute mode; default to octave "3"
     octave = 3 + relOctave;
   }
@@ -197,7 +201,10 @@ Vex.Flow.Backend.LilyPond.prototype.getMeasure = function(m) {
         stave.clef = attrs.clef[voice.stave] = n.clef;
         return;
       }
-      if (n.duration) attrs.duration[v] = n.duration.toString();
+      if (n.duration) {
+        attrs.duration[v] = n.duration.toString();
+        if (n.duration[n.duration.length-1]=='d')console.log(n);
+      }
       voice.addNote({keys: n.absolute_keys,
                      duration: attrs.duration[v],
                      accidentals: n.accidentals,
@@ -211,4 +218,9 @@ Vex.Flow.Backend.LilyPond.prototype.getMeasure = function(m) {
   return measure;
 }
 
-Vex.Flow.Backend.LilyPond.prototype.getStaveConnectors = function(){return []}
+Vex.Flow.Backend.LilyPond.prototype.getStaveConnectors = function() {
+  // FIXME: Stave connectors for multipart music
+  if (this.staves.length > 1)
+    return [{type: "brace", parts: [0], system_start: true}];
+  else return [];
+}
