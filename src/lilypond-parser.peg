@@ -6,19 +6,14 @@ start
   = space? exprs:(
       "\\version" space? version:str space? { return {} }
     / header space? { return {} }
-    / k:keyword space? "=" space? m:musicBlock space? {
-        var variables = {};
+    / k:keyword space? "=" space? m:(musicStaff / musicVoice / musicBlock) space? {
         variables[k] = m;
-        return {variables: variables};
+        return {};
       }
-    / ("\\score" space?)? m:musicBlock space? { return { score: m } }
+    / ("\\score" space?)? m:musicStaff space? { return { score: m } }
   )+ {
-    var variables = {};
     var score = null;
     exprs.forEach(function(e) {
-      if (e.variables) {
-        for (v in e.variables) variables[v] = e.variables[v];
-      }
       if (e.score) {
         if (score) {
           throw new Vex.RERR("InvalidLilyPond",
@@ -27,25 +22,7 @@ start
         score = e.score;
       }
     });
-    function interpolate(musicExpr) {
-      // Interpolate musicExpr with variables
-      if (musicExpr instanceof Array)
-        return musicExpr.map(interpolate);
-      else if ('variable' in musicExpr) {
-        if (! musicExpr.variable in variables)
-          throw new Vex.RERR('InvalidLilyPond', 'Variable not defined');
-        return interpolate(variables[musicExpr.variable]);
-      }
-      else if ('music' in musicExpr) {
-        // Copy from musicExpr
-        var newExpr = {};
-        for (i in musicExpr) newExpr[i] = musicExpr[i];
-        newExpr.music = interpolate(musicExpr.music);
-        return newExpr;
-      }
-      else return musicExpr;
-    }
-    return interpolate(score);
+    return score;
   }
 
 header = "\\header" space? dict
@@ -62,19 +39,35 @@ markupExpr /* Allow arbitrary characters with nesting braces */
   = markup
   / text:([^{}]+)
 
+musicStaff // LilyPond Staff, created explicitly or implicitly
+  = "\\" ("new" / "context") space "Staff" space v:musicVoice
+    { return {type: "stave", voices: [v]} }
+
+musicVoice // LilyPond Voice, created explicitly or implicitly
+  = "\\" ("new" / "context") space "Voice" space m:musicBlock
+    { // Voice is just an array of arrays (measures) with an extra property
+      // type: "voice"
+      m.type = "voice";
+      return m; }
+  / m:musicBlock {
+      m.type = "voice";
+      return m;
+    }
+
 musicBlock 
   = // Music delimited by braces, possibly with multiple Staves/Voices
     "{" space? m:musicExpr space? "}" { return m }
-  // Music block inside a context, relative, etc.
-  / "\\" ("context" / "new") space "Staff" space m:musicBlock {
-    return {type: "stave", music: m} }
-  / "\\" ("context" / "new") space "Voice" space m:musicBlock {
-    return {type: "voice", music: m} }
   / "\\relative" space n:notePitch space m:musicBlock {
-    m[0][0].relative = n;
+    m.relative = n;
     return m; }
-  // Interpolated variable
-  / "\\" variable:([A-z]+) { return {variable: variable.join('')} }
+  // Interpolated variable; must have been defined previously
+  / "\\" variable:([A-z]+) {
+    variable = variable.join('');
+    if (! (variable in variables))
+      return null; // Don't match
+      //throw new Vex.RERR("InvalidLilyPond",
+                         //"Variable not defined: '" + variable + "'");
+    return variables[variable]; } // TODO: deep copy variable
     // Simultaneous contexts
   / "<<" space? blocks:(musicBlock space?)+ ">>" {
     return blocks.map(function(l){return l[0]}) }
@@ -82,7 +75,10 @@ musicBlock
 musicExpr // Split music into multiple measures
   = space? measures:(notes space? measureSep space?)*
            lastMeasure:notes space? {
-      return measures.map(function(l){return l[0]}).concat([lastMeasure]);
+      //return {measures:
+              //measures.map(function(l){return l[0]}).concat([lastMeasure])};
+              return(measures.map(function(l){return l[0]}).concat([lastMeasure]));
+              //return [lastMeasure];
     }
 measureSep = "|"
 
@@ -140,7 +136,8 @@ noteCommands = "^" (space? "\\" [a-zA-Z]+)+
 note = p:notePitch d:noteDuration? noteCommands? {
   return {keys: [p], duration: d} }
 
-rest = "r" d:noteDuration? noteCommands? { return {type: "rest", duration: d} }
+rest = type:[rs] d:noteDuration? noteCommands? {
+          return {type: "rest", duration: d, hidden: (type == "s")} }
      / n:note "^\\rest" { n.type = "rest"; return n; }
 
 chord = "<" space? keys:(notePitch space?)+ ">" d:noteDuration? noteCommands? {
@@ -151,6 +148,6 @@ chord = "<" space? keys:(notePitch space?)+ ">" d:noteDuration? noteCommands? {
 str = "\"" str:([^"]+) "\"" { return str.join(""); }
 space
   = ([ \t\r\n]
-  / "%" [ \t] ("\r\n" / "\n" / "\r") // Single-line comment
+  / "%" [^\r\n]+ ("\r\n" / "\n" / "\r") // Single-line comment
   / "%{" [^%]* "%}" // Multi-line comment
   )+

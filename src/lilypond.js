@@ -7,13 +7,14 @@ if (! Vex.Flow.Backend) Vex.Flow.Backend = {};
 
 /** @constructor */
 Vex.Flow.Backend.LilyPond = function() {
-  // Array of parsed LilyPond voices, which contain multiple measures
-  this.voices = new Array();
-  // Array of staves containing list of corresponding voice indices
+  // Root of parsed LilyPond
+  this.lilypondContext = null;
+  // Array of parsed LilyPond staves, which contain multiple voices
   this.staves = new Array();
-  // Store measures -> object of attributes
-  // clef (array of staves), time, key, duration (last used duration)
-  this.attributes = new Array();
+  // Array of individual voices from each stave
+  this.voices = new Array();
+  // Index of voice -> index of stave
+  this.staveForVoice = new Array();
 }
 
 Vex.Flow.Backend.LilyPond.appearsValid = function(data) {
@@ -22,52 +23,29 @@ Vex.Flow.Backend.LilyPond.appearsValid = function(data) {
 }
 
 Vex.Flow.Backend.LilyPond.prototype.parse = function(data) {
-  var parsedData = this.parser.parse(data);
+  this.lilypondContext = this.parser.parse(data);
   this.valid = true;
-  var voiceIndices = {};
-  for (voice in parsedData.voices) {
-    voiceIndices[voice] = this.voices.length;
-    this.voices.push(parsedData.voices[voice]);
-  }
-  // Each voice must have the same number of measures
-  var numMeasures = this.voices[0].measures.length;
-  this.voices.forEach(function(v) {
-    if (v.measures.length != numMeasures) {
-      this.valid = false;
-      throw new Vex.RERR("InvalidLilyPond", "Bad number of measures");
-    }
-  });
-  if (! parsedData.score.staves.length) {
-    this.valid = false;
-    throw new Vex.RERR("InvalidLilyPond", "No staves in score");
-  }
-  this.staves = parsedData.score.staves.map(function(voiceNames) {
-    if (! voiceNames.length) {
-      this.valid = false;
-      throw new Vex.RERR("InvalidLilyPond",
-          "Stave in LilyPond score must contain at least one voice");
-    }
-    return voiceNames.map(function(name) {
-      if (typeof voiceIndices[name] != "number") {
-        this.valid = false;
-        throw new Vex.RERR("InvalidLilyPond", "?");
-      }
-      return voiceIndices[name];
-    })
-  });
-  // Calculate relative for each voice in the first measure
-  for (var v = 0; v < this.voices.length; v++)
-    this.getMeasureRelative(v, 0);
+  // XXX: assume context has a single stave at its root
+  this.staves = [this.lilypondContext];
+  this.voices = [];
+  var staveNum = 0;
+  this.staves.forEach(function(stave) {
+    stave.voices.forEach(function(voice) {
+      this.voices.push(voice);
+      this.staveForVoice.push(staveNum);
+    }, this);
+    staveNum++;
+  }, this);
 }
 
 Vex.Flow.Backend.LilyPond.prototype.isValid = function() { return this.valid; }
 
 Vex.Flow.Backend.LilyPond.prototype.getNumberOfMeasures = function() {
-  return this.voices[0].measures.length;
+  return this.voices[0].length - 1; // FIXME
 }
 
 Vex.Flow.Backend.LilyPond.prototype.getMeasureNumber = function(m) {
-  return this.voices[0].measures[m].measure;
+  return m+1; // FIXME
 }
 
 /** Return an object of the form {keys:"c/4", accidentals:"n"}
@@ -123,21 +101,22 @@ Vex.Flow.Backend.LilyPond.prototype.getMeasureRelative = function(v, m) {
   if (typeof voice.relative != "string") return null;
 
   if (m == 0) {
-    voice.measures[0].relative = this.parseKey(voice.relative).keys;
-    return voice.measures[0].relative;
+    if (voice[0].relative) return voice[0].relative;
+    voice[0].relative = this.parseKey(voice.relative).keys;
+    return voice[0].relative;
   }
   else {
     // Allow m up to "one past last measure" to go through last measure
-    if (m > voice.measures.length) throw new Vex.RERR("InvalidArgument",
+    if (m > voice.length) throw new Vex.RERR("InvalidArgument",
                                                       "Not a measure number");
     // Ensure we have relative values for every measure up to this one
-    if (m > 0 && ! ("relative" in voice.measures[m-1]))
+    if (m > 0 && ! ("relative" in voice[m-1]))
       this.getMeasureRelative(v, m-1);
     // Relative at start of measure m-1
-    var relative = voice.measures[m-1].relative;
+    var relative = voice[m-1].relative;
 
     // Store absolute_keys and relative in each note for previous measure
-    voice.measures[m-1].notes.forEach(function(n) {
+    voice[m-1].forEach(function(n) {
       if (! n.keys || ! n.keys.length) return;
       var keyRelative = relative; // Relative to each note in chord
       n.accidentals = [];
@@ -156,23 +135,27 @@ Vex.Flow.Backend.LilyPond.prototype.getMeasureRelative = function(v, m) {
     }, this);
     // Relative at start of this measure
     // Don't actually store final relative value past last measure
-    if (m < voice.measures.length) voice.measures[m].relative = relative;
+    if (m < voice.length) voice[m].relative = relative;
     return relative;
   }
 }
+
+/**
+ * MUST be called on each measure sequentially, or bad things will happen!
+ */
 Vex.Flow.Backend.LilyPond.prototype.getMeasure = function(m) {
-  var attrs;
-  if (! (m in this.attributes)) {
-    attrs = this.attributes[m] = Vex.Merge({}, this.attributes[m-1] || {});
-    // Force deep copy of clefs/duration
-    if (attrs.clef) attrs.clef = attrs.clef.slice();
-    if (attrs.duration) attrs.duration = attrs.duration.slice();
-  }
-  else attrs = this.attributes[m];
-  if (! ("clef" in attrs))
-    attrs.clef = this.staves.map(function() {return "treble"});
-  if (! ("duration" in attrs))
+  var attrs = {};
+  attrs.clef = this.staves.map(function() {return "treble"}); // FIXME
+  if (m == 0) {
+    // Default duration
     attrs.duration = this.voices.map(function() {return "8"});
+  }
+  else {
+    attrs.duration = this.voices.map(function(voice) {
+      var lastMeasure = voice[m-1];
+      return lastMeasure[lastMeasure.length-1].duration || "8";
+    });
+  }
   if (! ("key" in attrs))
     attrs.key = "C";
   if (! ("time" in attrs))
@@ -182,20 +165,13 @@ Vex.Flow.Backend.LilyPond.prototype.getMeasure = function(m) {
   part.options.clef = "treble";
   part.options.key = "C"; // FIXME: key
   part.setNumberOfStaves(this.staves.length);
-  // Array of voice number -> stave number
-  var voicesToStaves = [];
-  var s = 0;
-  this.staves.forEach(function(voiceNumbers) {
-    voiceNumbers.forEach(function(v) { voicesToStaves[v] = s; });
-    s++;
-  });
   part.setNumberOfVoices(this.voices.length);
   var v = 0;
   this.voices.forEach(function(lilyVoice) {
     this.getMeasureRelative(v, m+1);
     var voice = part.getVoice(v);
-    voice.stave = voicesToStaves[v];
-    lilyVoice.measures[m].notes.forEach(function(n) {
+    voice.stave = this.staveForVoice[v];
+    lilyVoice[m].forEach(function(n) {
       if (n.clef) {
         var stave = part.getStave(voice.stave);
         stave.clef = attrs.clef[voice.stave] = n.clef;
@@ -205,6 +181,7 @@ Vex.Flow.Backend.LilyPond.prototype.getMeasure = function(m) {
         attrs.duration[v] = n.duration.toString();
         if (n.duration[n.duration.length-1]=='d')console.log(n);
       }
+      else n.duration = attrs.duration[v];
       voice.addNote({keys: n.absolute_keys,
                      duration: attrs.duration[v],
                      accidentals: n.accidentals,
