@@ -124,7 +124,7 @@ Vex.Flow.Document.prototype.init = function(data, options) {
  */
 Vex.Flow.Document.prototype.getFormatter = function(formatterClass) {
   var Formatter = formatterClass;
-  if (typeof FormatterClass != "function")
+  if (typeof formatterClass != "function")
     Formatter = Vex.Flow.DocumentFormatter.Liquid; // default class
   return new Formatter(new Vex.Flow.Document(this));
 }
