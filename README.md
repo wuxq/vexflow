@@ -1,51 +1,14 @@
-# VexFlow 2
+# VexFlow MusicXML plugin
 
-A JavaScript library for rendering music notation.
-Copyright (c) 2010 Mohit Muthanna Cheppudira
+This is a fork of [@ringw's spectacular fork of VexFlow](https://github.com/ringw/vexflow/tree/musicxml) that adds support for loading MusicXML documents. That effort, which quite successful, is not actively synced with the [upstream repository](https://github.com/0xfe/vexflow), so it does not enjoy the benefits of VexFlow's active development.
 
-## What is VexFlow?
+Given the difficult of maintaining forks for long periods, this project simply organizes @ringw's contribution as a plugin to the core VexFlow project. I've removed everything except the [files that are specific to the fork](https://github.com/ringw/vexflow/compare/0xfe:master...musicxml).
 
-VexFlow is an open-source web-based music notation rendering API. It is written
-completely in JavaScript, and runs right in the browser. VexFlow supports HTML5
-Canvas and SVG, and runs on all modern browsers.
+## Installation
 
-Go try out [The VexFlow Tutorial](http://vexflow.com/docs/tutorial.html) to
-learn how to use VexFlow.
+First, install Vexflow itself:
 
-If you're not a developer and just want to write and share your music, go to
-[My VexFlow](http://my.vexflow.com).
+	git clone https://github.com/0xfe/vexflow
 
-## Resources
+(If you prefer, you can `npm install vexflow` or `bower install vexflow` -- doesn't matter so long as you know where to find it.)
 
-To learn and contribute, check out the [VexFlow Wiki](https://github.com/0xfe/vexflow/wiki).
-
-To build VexFlow from scratch, read the [Build Instructions](https://github.com/0xfe/vexflow/wiki/Build-Instructions).
-
-## MIT License
-
-Copyright (c) Mohit Muthanna Cheppudira 2010 <br/>
-0xFE <mohit@muthanna.com> http://www.vexflow.com
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-
-## Links
-
-* [VexFlow Home](http://vexflow.com)
-* [My VexFlow](http://my.vexflow.com)
-* [Me](http://0xfe.muthanna.com)
