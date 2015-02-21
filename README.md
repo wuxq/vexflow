@@ -6,9 +6,38 @@ Given the difficult of maintaining forks for long periods, this project simply o
 
 ## Installation
 
-First, install Vexflow itself:
+Clone this repo and install the dependencies
 
-	git clone https://github.com/0xfe/vexflow
+	git clone git@github.com:mechanicalscribe/vexflow-musicxml.git && cd vexflow-musicxml
+	npm install
 
-(If you prefer, you can `npm install vexflow` or `bower install vexflow` -- doesn't matter so long as you know where to find it.)
+This will install VexFlow and a few build dependencies to [node_modules](/node_modules). To build the plugin, just run the build script:
 
+	./build.js
+
+This will generate a file called [vexflow.musicxml.js](vexflow.musicxml.js). To use it, all you need to do is include it along with the original VexFlow library:
+
+	<script src="node_modules/vexflow_releases/vexflow-min.js"></script>
+	<script src="vexflow.musicxml.js"></script>
+
+After building the script you can see this in action at [demo/index.html](demo/index.html), though you'll need to spin up a server since the page makes an AJAX call to the XML file with the actual music in it:
+
+	python -m SimpleHTTPServer 8080
+
+Then head on over to [localhost:8080/demo/index.html](http://localhost:8080/demo/index.html) for some Moonlight Sonata rendered live in your browser.
+
+## Build options
+
+To include the VexFlow source in the build:
+
+	./build.js --include-vexflow
+
+To include source maps:
+
+	./build.js --debug
+
+To include Vexflow from somewhere other than `node_modules`:
+
+	./build.js --path=path/to/vexflow/js_file
+
+	

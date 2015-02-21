@@ -3,3 +3,5 @@ node_modules
 bower_components
 vexflow
 support/vexflow
+vexflow.musicxml.js
+vexflow.musicxml.min.js

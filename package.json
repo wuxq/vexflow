@@ -25,6 +25,8 @@
   },
   "homepage": "https://github.com/mechanicalscribe/vexflow-musicxml",
   "dependencies": {
-    "browserify": "^8.1.1"
+    "browserify": "^8.1.1",
+    "minimist": "^1.1.0",
+    "vexflow": "^1.2.27"
   }
 }

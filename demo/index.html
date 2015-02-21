@@ -4,11 +4,12 @@
   <meta name="viewport" content="initial-scale = 1.0, minimum-scale = 1.0, maximum-scale = 1.0, user-scalable = no">
 
   <!-- VexFlow Compiled Source -->
-  <script src="../support/vexflow/releases/vexflow-min.js"></script>
+  <!--<script src="../node_modules/vexflow/releases/vexflow-min.js"></script>-->
   <script src="../vexflow.musicxml.js"></script>
 
   <!-- Support Sources -->
-  <script src="../support/jquery.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <!--<script src="../support/jquery.js"></script>-->
   <!--<script src="../support/raphael.js"></script>-->
 
   <style type="text/css">
@@ -24,7 +25,7 @@
     var VexFormatter = null;
 
     $.ajax({
-      url: "samples/beethoven_moonlight_m1.xml",
+      url: "beethoven_moonlight_m1.xml",
       success: function(data) {
         var start = new Date().getTime(); // time execution
 
