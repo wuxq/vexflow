@@ -55,7 +55,7 @@ Vex.Flow.Backend.IR.appearsValid = function(object) {
  *
  * @return {Number} Total number of measures
  */
-Vex.Flow.Backend.IR.prototype.getNumberOfMeasures = function() {
+Vex.Flow.Backend.IR.prototype.getNumberOfMeasures = function() {  
   return this.documentObject.measures.length;
 }
 
@@ -101,17 +101,21 @@ Vex.Flow.Document.prototype.init = function(data, options) {
   // Optionally pass constructor function for backend
   var backends = (typeof this.options.backend == "function")
                  ? [this.options.backend] : Vex.Flow.Document.backends;
+
+  // find a valid backend for the data passed
   for (var i = 0; i < backends.length; i++) {
     var Backend = backends[i];
     if (Backend.appearsValid(data)) {
       this.backend = new Backend();
       this.backend.parse(data);
-      if (! this.backend.isValid())
+      if (! this.backend.isValid()) {
         throw new Vex.RERR("ParseError", "Could not parse document data");
+      }
     }
   }
-  if (! this.backend)
+  if (! this.backend) {
     throw new Vex.RERR("ParseError", "Data in document is not supported");
+  }
 
   this.type = "document";
 }
