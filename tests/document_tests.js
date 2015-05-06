@@ -7,12 +7,12 @@ Vex.Flow.Test.Document = {};
 
 Vex.Flow.Test.Document.Start = function() {
   module("Document");
-  Vex.Flow.Test.runTest("Auto-generated Measure Test",
+  Vex.Flow.Test.runTests("Auto-generated Measure Test",
                         Vex.Flow.Test.Document.measure);
-  Vex.Flow.Test.runTest("Basic JSON IR Test", Vex.Flow.Test.Document.jsonSimple);
-  Vex.Flow.Test.runTest("Complex JSON IR Test", Vex.Flow.Test.Document.jsonComplex);
-  Vex.Flow.Test.runTest("Basic MusicXML Test", Vex.Flow.Test.Document.xmlSimple);
-  Vex.Flow.Test.runTest("MusicXML Document Test", Vex.Flow.Test.Document.xmlDoc);
+  Vex.Flow.Test.runTests("Basic JSON IR Test", Vex.Flow.Test.Document.jsonSimple);
+  Vex.Flow.Test.runTests("Complex JSON IR Test", Vex.Flow.Test.Document.jsonComplex);
+  Vex.Flow.Test.runTests("Basic MusicXML Test", Vex.Flow.Test.Document.xmlSimple);
+  Vex.Flow.Test.runTests("MusicXML Document Test", Vex.Flow.Test.Document.xmlDoc);
 };
 
 Vex.Flow.Test.Document.measure = function(options, contextBuilder) {
