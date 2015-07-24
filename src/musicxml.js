@@ -303,8 +303,10 @@ Vex.Flow.Backend.MusicXML.prototype.parseNote = function(noteElem, attrs) {
         var type = elem.textContent;
         // Look up type
         noteObj.duration = {
+          maxima: "1/8", long: "1/4", breve: "1/2",
           whole: "1", half: "2", quarter: "4", eighth: "8", "16th": "16",
-          "32nd": "32", "64th": "64", "128th": "128", "256th": "256"
+          "32nd": "32", "64th": "64", "128th": "128", "256th": "256",
+          "512th": "512", "1024th": "1024"
         }[type];
         if (noteObj.rest) noteObj.duration += "r";
         break;
