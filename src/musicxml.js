@@ -254,6 +254,7 @@ Vex.Flow.Backend.MusicXML.prototype.parseAttributes =
                  : (sign == "C" && line == "3") ? "alto"
                  : (sign == "C" && line == "4") ? "tenor"
                  : (sign == "F" && line == "4") ? "bass"
+                 : (sign == "percussion") ? "percussion"
                  : null;
         if (number > 0) {
           if (measureNum in this.attributes
