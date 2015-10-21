@@ -33,7 +33,7 @@ To skip the VexFlow source and just use this as a plugin, omit `--include-vexflo
 
 Then you'd want to do something like:
 
-	<script src="node_modules/vexflow_releases/vexflow-min.js"></script>
+	<script src="node_modules/vexflow/releases/vexflow-min.js"></script>
 	<script src="vexflow.musicxml.js"></script>
 
 To include source maps:

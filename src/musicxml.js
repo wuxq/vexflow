@@ -33,7 +33,6 @@ Vex.Flow.Backend.MusicXML.appearsValid = function(data) {
          (data.documentElement.nodeName == 'score-partwise');
 }
 
-// take the XML document and extract the parts we need into an object
 Vex.Flow.Backend.MusicXML.prototype.parse = function(data) {
   if (typeof data == "string") {
     // Parse XML string
@@ -83,10 +82,7 @@ Vex.Flow.Backend.MusicXML.prototype.parse = function(data) {
         }
         this.measures[measureNum][partNum] = measure;
         var attributes = measure.getElementsByTagName("attributes")[0];
-        if (attributes) {
-          this.parseAttributes(measureNum, partNum, attributes);
-          //console.log(this.attributes);
-        }
+        if (attributes) this.parseAttributes(measureNum, partNum, attributes);
         measureNum++;
       }
       // numStaves defaults to 1 for this part
@@ -163,22 +159,18 @@ Vex.Flow.Backend.MusicXML.prototype.getMeasureNumber = function(m) {
 
 Vex.Flow.Backend.MusicXML.prototype.getMeasure = function(m) {
   var measure_attrs = this.getAttributes(m, 0);
-  //var time = measure_attrs.time_signature || measure_attrs.time;
   var time = measure_attrs.time;
   var measure = new Vex.Flow.Measure({time: time});
   var numParts = this.measures[m].length;
   measure.setNumberOfParts(numParts);
   for (var p = 0; p < numParts; p++) {
     var attrs = this.getAttributes(m, p);
-    var partOptions = {time: time };
+    var partOptions = {time: time};
     if (typeof attrs.clef == "string") partOptions.clef = attrs.clef;
     if (typeof attrs.key  == "string") partOptions.key  = attrs.key;
-    if (typeof attrs.time_signature  == "string") partOptions.time_signature  = attrs.time_signature;
-
     measure.setPart(p, partOptions);
     var part = measure.getPart(p);
     part.setNumberOfStaves(this.numStaves[p]);
-
     if (attrs.clef instanceof Array)
       for (var s = 0; s < this.numStaves[p]; s++)
         part.setStave(s, {clef: attrs.clef[s]});
@@ -249,8 +241,9 @@ Vex.Flow.Backend.MusicXML.prototype.parseAttributes =
                    : {
           num_beats: parseInt(attr.getElementsByTagName("beats")[0]
                                       .textContent),
-          beat_value: parseInt(attr.getElementsByTagName("beat-type")[0].textContent),
-          soft: true // XXX: Should we always have soft voices? // Note: this prevents time signature from ever showing 
+          beat_value: parseInt(attr.getElementsByTagName(
+                                          "beat-type")[0].textContent),
+          soft: true // XXX: Should we always have soft voices?
         };
         break;
       case "clef":
@@ -261,6 +254,7 @@ Vex.Flow.Backend.MusicXML.prototype.parseAttributes =
                  : (sign == "C" && line == "3") ? "alto"
                  : (sign == "C" && line == "4") ? "tenor"
                  : (sign == "F" && line == "4") ? "bass"
+                 : (sign == "percussion") ? "percussion"
                  : null;
         if (number > 0) {
           if (measureNum in this.attributes
@@ -282,13 +276,8 @@ Vex.Flow.Backend.MusicXML.prototype.parseAttributes =
     if (! (partNum in this.attributes[measureNum]))
       this.attributes[measureNum][partNum] = {};
     this.attributes[measureNum][partNum][attr.nodeName] = attrObject;
-
-    if (attr.nodeName === "time" && attr.getAttribute("symbol")) {
-      this.attributes[measureNum][partNum].time_signature = attr.getAttribute("symbol");
-    }
-
   }
-  return attrObject;  
+  return attrObject;
 }
 
 Vex.Flow.Backend.MusicXML.prototype.parseNote = function(noteElem, attrs) {
@@ -315,8 +304,10 @@ Vex.Flow.Backend.MusicXML.prototype.parseNote = function(noteElem, attrs) {
         var type = elem.textContent;
         // Look up type
         noteObj.duration = {
+          maxima: "1/8", long: "1/4", breve: "1/2",
           whole: "1", half: "2", quarter: "4", eighth: "8", "16th": "16",
-          "32nd": "32", "64th": "64", "128th": "128", "256th": "256"
+          "32nd": "32", "64th": "64", "128th": "128", "256th": "256",
+          "512th": "512", "1024th": "1024"
         }[type];
         if (noteObj.rest) noteObj.duration += "r";
         break;
@@ -429,7 +420,6 @@ Vex.Flow.Backend.MusicXML.prototype.getAttributes = function(m, p) {
   var attrs = {};
   // Merge with every previous attributes object in order
   // If value is an array, merge non-null indices only
-  //console.log(this.attributes);
   for (var i = 0; i <= m; i++) {
     if (! (i in this.attributes)) continue;
     if (! (p in this.attributes[i])) continue;

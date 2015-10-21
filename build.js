@@ -7,7 +7,9 @@ var args = require('minimist')(process.argv.slice(2));
 
 var b = browserify({ debug: args.debug || false });
 
-var path_to_vexflow = args.path || "./node_modules/vexflow/releases/";
+var path_to_vexflow = args.path || path.join(__dirname, "node_modules/vexflow/releases/");
+
+console.log(path_to_vexflow);
 
 if (args["include-vexflow"]) {
 	b.add(path.join(path_to_vexflow, 'vexflow-debug.js'));
