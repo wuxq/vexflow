@@ -1,59 +1,44 @@
-# VexFlow 2
+# VexFlow MusicXML plugin
 
-A JavaScript library for rendering music notation.
-Copyright (c) 2010 Mohit Muthanna Cheppudira
+A plugin for parsing and engraving MusicXML documents
+in [VexFlow](https://github.com/0xFE/vexflow).
+Thanks to @mechanicalscribe for reorganizing the project as a plugin,
+so it can be worked on independently of the upstream VexFlow.
 
-## What is VexFlow?
+## Installation
 
-VexFlow is an open-source web-based music notation rendering API. It is written
-completely in JavaScript, and runs right in the browser. VexFlow supports HTML5
-Canvas and SVG, and runs on all modern browsers.
+Clone this repo and install the dependencies
 
-Go try out [The VexFlow Tutorial](http://vexflow.com/docs/tutorial.html) to
-learn how to use VexFlow.
+	git clone git@github.com:mechanicalscribe/vexflow-musicxml.git && cd vexflow-musicxml
+	npm install
 
-If you're not a developer and just want to write and share your music, go to
-[My VexFlow](http://my.vexflow.com).
+	./build.js --include-vexflow
 
-## Quick Start
+This will generate a file called [vexflow.musicxml.js](vexflow.musicxml.js). To use it, all you need to do is include it.
 
-Install via NPM:
+	<script src="vexflow.musicxml.js"></script>
 
-    $ npm install vexflow
+After building the script you can see this in action at [demo/index.html](demo/index.html), though you'll need to spin up a server since the page makes an AJAX call to the XML file with the actual music in it:
 
-Include `releases/vexflow-min.js` into your HTML or JS code. It works as a standalone script in a `script` tag, or as a CommonJS or AMD dependency.
+	python -m SimpleHTTPServer 8080
 
-## Resources
+Then head on over to [localhost:8080/demo/index.html](http://localhost:8080/demo/index.html) for some Moonlight Sonata rendered live in your browser.
 
-To learn and contribute, check out the [VexFlow Wiki](https://github.com/0xfe/vexflow/wiki).
+## Build options
 
-To build VexFlow from scratch, read the [Build Instructions](https://github.com/0xfe/vexflow/wiki/Build-Instructions).
+To skip the VexFlow source and just use this as a plugin, omit `--include-vexflow` in the build:
 
-## MIT License
+	./build.js
 
-Copyright (c) Mohit Muthanna Cheppudira 2010 <br/>
-0xFE <mohit@muthanna.com> http://www.vexflow.com
+Then you'd want to do something like:
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+	<script src="node_modules/vexflow/releases/vexflow-min.js"></script>
+	<script src="vexflow.musicxml.js"></script>
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+To include source maps:
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+	./build.js --debug
 
-## Links
+To include Vexflow from somewhere other than `node_modules`:
 
-* [VexFlow Home](http://vexflow.com)
-* [My VexFlow](http://my.vexflow.com)
-* [Me](http://0xfe.muthanna.com)
+	./build.js --path=path/to/vexflow/js_file

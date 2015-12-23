@@ -121,7 +121,9 @@ Vex.Flow.DocumentFormatter.prototype.getStave = function(m, s) {
       || typeof this.getStaveWidth != "function")
     throw new Vex.RERR("MethodNotImplemented",
                 "Document formatter must implement getStaveX, getStaveWidth");
+  //console.log(m, this.document.getMeasure(m));
   var stave = this.document.getMeasure(m).getStave(s);
+
   if (! stave) return undefined;
   var vfStave = this.createVexflowStave(stave,
                                         this.getStaveX(m, s),
@@ -402,9 +404,11 @@ Vex.Flow.DocumentFormatter.prototype.drawMeasure =
 Vex.Flow.DocumentFormatter.prototype.drawBlock = function(b, context) {
   this.getBlock(b);
   var measures = this.measuresInBlock[b];
+
   measures.forEach(function(m) {
     var stave = 0;
     while (this.getStave(m, stave)) stave++;
+
     this.drawMeasure(this.document.getMeasure(m), this.vfStaves[m], context,
                      {system_start: m == measures[0],
                       system_end: m == measures[measures.length - 1]});
@@ -456,17 +460,23 @@ Vex.Flow.DocumentFormatter.Liquid.prototype.getBlock = function(b) {
 
   // Update modifiers for first measure
   this.document.getMeasure(startMeasure).getStaves().forEach(function(s) {
+    console.log(s);
+
     if (typeof s.clef == "string" && ! s.getModifier("clef")) {
       s.addModifier({type: "clef", clef: s.clef, automatic: true});
     }
     if (typeof s.key == "string" && ! s.getModifier("key")) {
       s.addModifier({type: "key", key: s.key, automatic: true});
     }
+
     // Time signature on first measure of piece only
     if (startMeasure == 0 && ! s.getModifier("time")) {
-      if (typeof s.time_signature == "string")
+      if (typeof s.time_signature == "string") {
+        //console.log(s);
         s.addModifier({type: "time", time: s.time_signature,automatic:true});
-      else if (typeof s.time == "object" && ! s.time.soft)
+      }
+      //else if (typeof s.time == "object" && ! s.time.soft)
+      else if (typeof s.time == "object")
         s.addModifier(Vex.Merge({type: "time", automatic: true}, s.time));
     }
   });
@@ -572,8 +582,12 @@ Vex.Flow.DocumentFormatter.Liquid.prototype.draw = function(elem, options) {
     elem.innerHTML = "";
     this.canvases = [];
   }
-  var canvasWidth = $(elem).width() - 10; // TODO: remove jQuery dependency
+
+  //var canvasWidth = $(elem).width() - 10; // TODO: remove jQuery dependency
+  var canvasWidth = elem.offsetWidth - 10; 
+
   var renderWidth = Math.floor(canvasWidth / this.zoom);
+
   // Invalidate all blocks/staves/voices
   this.minMeasureWidths = []; // heights don't change with stave modifiers
   this.measuresInBlock = [];
@@ -592,6 +606,7 @@ Vex.Flow.DocumentFormatter.Liquid.prototype.draw = function(elem, options) {
     var dims = this.blockDimensions[b];
     var width = Math.ceil(dims[0] * this.zoom);
     var height = Math.ceil(dims[1] * this.zoom);
+
     if (! this.canvases[b]) {
       canvas = document.createElement('canvas');
       canvas.width = width * this.scale;
@@ -625,9 +640,11 @@ Vex.Flow.DocumentFormatter.Liquid.prototype.draw = function(elem, options) {
       context.clearRect(0, 0, canvas.width, canvas.height);
     }
     // TODO: Figure out why setFont method is called
-    if (typeof context.setFont != "function")
+    if (typeof context.setFont != "function") {
       context.setFont = function(font) { this.font = font; return this; };
+    }
     context.scale(this.zoom * this.scale, this.zoom * this.scale);
+
     this.drawBlock(b, context);
     // Add anchor elements before canvas
     var lineAnchor = document.createElement("a");

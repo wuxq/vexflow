@@ -108,8 +108,9 @@ Vex.Flow.Measure.Part = function(object) {
   this.options = {time: this.time};
   if (typeof object.clef == "string") this.options.clef = object.clef;
   if (typeof object.key == "string") this.options.key = object.key;
-  if (typeof object.time_signature == "string")
+  if (typeof object.time_signature == "string") {
     this.options.time_signature = object.time_signature;
+  }
   if (typeof object.options == "object")
     Vex.Merge(this.options, object.options);
 
@@ -304,7 +305,7 @@ Vex.Flow.Measure.Stave = function(object) {
   this.modifiers = new Array();
   if (object.modifiers instanceof Array) {
     for (var i = 0; i < object.modifiers.length; i++)
-      this.addModifier(object.modifiers[i]);
+      this.addModifier(object.modifiers[i]);  
   }
 
   this.type = "stave";
