@@ -1797,6 +1797,7 @@ Vex.Flow.Backend.MusicXML.prototype.fifthsToKey = function(fifths) {
         || (fifths >= 0 && spec.acc != "b" && spec.num == fifths)) return i;
   }
 }
+
 },{}],5:[function(require,module,exports){
 /**
  * VexFlow 1.2.36 built on 2015-10-15.

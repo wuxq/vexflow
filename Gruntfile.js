@@ -1,89 +1,21 @@
-// Gruntfile for VexFlow.
-// Mohit Muthanna Cheppudira <mohit@muthanna.com>
+// Gruntfile for VexFlow MusicXML plugin.
+// Adapted from VexFlow Gruntfile
+// by Mohit Muthanna Cheppudira <mohit@muthanna.com>
 
 module.exports = function(grunt) {
   var L = grunt.log.writeln;
   var BANNER = '/**\n' +
-                ' * VexFlow <%= pkg.version %> built on <%= grunt.template.today("yyyy-mm-dd") %>.\n' +
-                ' * Copyright (c) 2010 Mohit Muthanna Cheppudira <mohit@muthanna.com>\n' +
+                ' * VexFlow MusicXML plugin <%= pkg.version %> built on <%= grunt.template.today("yyyy-mm-dd") %>.\n' +
+                ' * Copyright (c) 2015 Daniel Ringwalt <dringw@gmail.com>\n' +
                 ' *\n' +
-                ' * http://www.vexflow.com  http://github.com/0xfe/vexflow\n' +
+                ' * http://github.com/ringw/vexflow\n' +
                 ' */\n';
   var BUILD_DIR = 'build';
   var RELEASE_DIR = 'releases';
-  var TARGET_RAW = BUILD_DIR + '/vexflow-debug.js';
-  var TARGET_MIN = BUILD_DIR + '/vexflow-min.js';
+  var TARGET_RAW = BUILD_DIR + '/vexflow-musicxml.js';
+  var TARGET_MIN = BUILD_DIR + '/vexflow-musicxml-min.js';
 
-  var SOURCES = [ "src/vex.js",
-                  "src/flow.js",
-                  "src/fraction.js",
-                  "src/tables.js",
-                  "src/fonts/vexflow_font.js",
-                  "src/glyph.js",
-                  "src/stave.js",
-                  "src/staveconnector.js",
-                  "src/tabstave.js",
-                  "src/tickcontext.js",
-                  "src/tickable.js",
-                  "src/note.js",
-                  "src/notehead.js",
-                  "src/stem.js",
-                  "src/stemmablenote.js",
-                  "src/stavenote.js",
-                  "src/tabnote.js",
-                  "src/ghostnote.js",
-                  "src/clefnote.js",
-                  "src/timesignote.js",
-                  "src/beam.js",
-                  "src/voice.js",
-                  "src/voicegroup.js",
-                  "src/modifier.js",
-                  "src/modifiercontext.js",
-                  "src/accidental.js",
-                  "src/dot.js",
-                  "src/formatter.js",
-                  "src/stavetie.js",
-                  "src/tabtie.js",
-                  "src/tabslide.js",
-                  "src/bend.js",
-                  "src/vibrato.js",
-                  "src/annotation.js",
-                  "src/articulation.js",
-                  "src/tuning.js",
-                  "src/stavemodifier.js",
-                  "src/keysignature.js",
-                  "src/timesignature.js",
-                  "src/clef.js",
-                  "src/music.js",
-                  "src/keymanager.js",
-                  "src/renderer.js",
-                  "src/raphaelcontext.js",
-                  "src/canvascontext.js",
-                  "src/stavebarline.js",
-                  "src/stavehairpin.js",
-                  "src/stavevolta.js",
-                  "src/staverepetition.js",
-                  "src/stavesection.js",
-                  "src/stavetempo.js",
-                  "src/stavetext.js",
-                  "src/barnote.js",
-                  "src/tremolo.js",
-                  "src/tuplet.js",
-                  "src/boundingbox.js",
-                  "src/textnote.js",
-                  "src/frethandfinger.js",
-                  "src/stringnumber.js",
-                  "src/strokes.js",
-                  "src/curve.js",
-                  "src/staveline.js",
-                  "src/crescendo.js",
-                  "src/ornament.js",
-                  "src/pedalmarking.js",
-                  "src/textbracket.js",
-                  "src/textdynamics.js",
-
-                  // MusicXML support
-                  "src/measure.js",
+  var SOURCES = [ "src/measure.js",
                   "src/musicxml.js",
                   "src/document.js",
                   "src/documentformatter.js",
@@ -122,9 +54,6 @@ module.exports = function(grunt) {
           "Raphael": false
          }
       }
-    },
-    qunit: {
-      files: ['tests/flow.html']
     },
     watch: {
       scripts: {
@@ -210,14 +139,5 @@ module.exports = function(grunt) {
   grunt.registerTask('stage', 'Stage current binaries to releases/.', function() {
     grunt.task.run('default');
     grunt.task.run('copy:release');
-  });
-
-  // Increment package version and publish to NPM.
-  grunt.registerTask('publish', 'Publish VexFlow NPM.', function() {
-    grunt.task.run('bump');
-    grunt.task.run('stage');
-    grunt.task.run('test');
-    grunt.task.run('gitcommit:releases');
-    grunt.task.run('release');
   });
 };
