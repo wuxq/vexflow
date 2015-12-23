@@ -2,7 +2,7 @@
 
 A plugin for parsing and engraving MusicXML documents
 in [VexFlow](https://github.com/0xFE/vexflow).
-Thanks to @mechanicalscribe for reorganizing the project as a plugin,
+Thanks to @wilson428 for reorganizing the project as a plugin,
 so it can be worked on independently of the upstream VexFlow.
 
 ## Installation
