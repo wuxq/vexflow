@@ -426,7 +426,7 @@ Vex.Flow.Measure.Note = function(object) {
                       ? new Vex.Flow.Fraction(1, 1) : null;
   this.tuplet = (typeof object.tuplet == "object" && object.tuplet)
               ? {num_notes: object.tuplet.num_notes,
-                 beats_occupied: object.tuplet.beats_occupied}
+                 notes_occupied: object.tuplet.notes_occupied}
               : null;
   this.stem_direction = (typeof object.stem_direction == "number")
                       ? object.stem_direction : null;
